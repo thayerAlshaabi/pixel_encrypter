@@ -22,8 +22,8 @@ As an attempt to keep the project cross-platform I neither used the Windows-API,
 scope of this project. They are mainly inspired by the offcial Windows documentation of bitmap-formats.
 The customized bitmap class contains a [header array], and a [pixels array]. The header array combines both the original bitmap-file header (14-bytes) and bitmap-information header(40-bytes). Further, the pixels array is a dynamic one dimensional array of pixel-objects where each pixel consists of three bytes, and each byte represents a color in the RGB-QUAD(Red, Green, Blue) stored in memory as unsigned characters.
 
-![figure1](https://github.com/thayerAlshaabi/steganography/blob/master/figure1.PNG)
-![figure2](https://github.com/thayerAlshaabi/steganography/blob/master/figure2.PNG)
+![figure1](https://github.com/thayerAlshaabi/pixel_encrypter/blob/master/figure1.PNG)
+![figure2](https://github.com/thayerAlshaabi/pixel_encrypter/blob/master/figure2.PNG)
 
 #### Loading Bitmaps Images In Memory
 Originally, BMP-format was designed to be incorporated with Intel processors, thus it uses Little-Endian format by default to order the individual bytes internally in memory. That being said, we need to be a bit more careful when implementing bitmaps on different computer architecture as it would not be an issue when working on Intel processors, however, it would be certainly a critical factor when working with other systems that may use Big-Endian format by default. 
@@ -50,7 +50,7 @@ The code below shows some in-line Assembly to calculate the padding value:
 
 Next step is to read the colors table, or the actual image grid of pixels and save it into memory. It is worth noting that pixels are, in fact, saved in reversed order in the bitmap, meaning that the first pixel that is going to be read is actually the pixel located on the lower-left corner of the image.
 
-![figure3](https://github.com/thayerAlshaabi/steganography/blob/master/figure3.png)
+![figure3](https://github.com/thayerAlshaabi/pixel_encrypter/blob/master/figure3.png)
 
 #### Re-creating Bitmaps Images
 Not surprisingly, the process of re-creating the image using its raw binary data is simpler process than loading the image { as far as the exporting operations get executed properly in the right order. However, while padding bytes get abstracted away when loading bitmap images into memory, because they are not needed in the importing process as they only represent empty spaces, they are very important in the exporting process. There is an extra step, which involves appending the padding bytes to the colors table in order to re-construct the image correctly. More importantly, padding will only be needed when the width of the image is not a multiple of 4.
@@ -63,7 +63,7 @@ My first intuition was to replace one of the colors inside each pixel with the A
 
 Thus, i used a slightly different approach, yet more complected as it involves some bit manipulations at the very low level. I decided to store each character into two different bytes within each pixel by splitting of the character bits into two sets. The low four bits of the character would be stored in the low four bits of the first color value in the pixel, which is Red in this case. And, the high four bits of the character would be stored in the low four bits of the second color value in the pixel, which is Green. The figure below illustrates the encoding process showing how bits are manipulated, and shifted before storing them accordingly into the bitmap:
 
-![figure4](https://github.com/thayerAlshaabi/steganography/blob/master/figure4.png)
+![figure4](https://github.com/thayerAlshaabi/pixel_encrypter/blob/master/figure4.png)
 
 
 The code below shows some in-line Assembly copying the ASCII value of one character from the message string, and storing it within two bytes of a single pixel in the image:
@@ -103,7 +103,7 @@ The results showed drastic improvements as the two images were visually identica
 For demonstration purposes, i ran the program on the image shown on the left side below. The image on the right side is indeed an identical copy of the original image, with the exception that it has an encrypted message -- which is approximately a (1,000) character long -- encoded carefully within its layout without distorting the image, or causing any damage to the image visually.
 			
 
-![figure5](https://github.com/thayerAlshaabi/steganography/blob/master/figure5.png)
+![figure5](https://github.com/thayerAlshaabi/pixel_encrypter/blob/master/figure5.png)
 
 
 #### Decrypting Messages
@@ -111,7 +111,7 @@ Intentionally, the length of the encrypted message is actually stored within the
 			
 The figure below illustrates the decoding process showing how bits get retrieved from the bitmap:
 
-![figure6](https://github.com/thayerAlshaabi/steganography/blob/master/figure6.png)
+![figure6](https://github.com/thayerAlshaabi/pixel_encrypter/blob/master/figure6.png)
 
 The code below shows some in-line Assembly describing the decrypting process: 
 ```
